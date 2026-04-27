@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Search, Heart, MapPin, User, X, ChevronRight } from 'lucide-react'
+import { Link, useNavigate } from 'react-router-dom'
 import { cn } from "@/lib/utils"
 
 const Navbar = () => {
@@ -15,10 +16,10 @@ const Navbar = () => {
       { title: "Plug-in Hybrid", type: "secondary" },
       { divider: true },
       { title: "Limousine", type: "secondary" },
-      { title: "SUV Range", type: "secondary" },
+      { title: "SUV Range", type: "secondary", path: "/suv" },
       { title: "Hatchback", type: "secondary" },
       { title: "Coupés", type: "secondary" },
-      { title: "Cabriolets / Roadsters", type: "secondary" },
+      { title: "Cabriolets / Roadsters", type: "secondary", path: "/cabriolets" },
       { title: "MPV", type: "secondary" },
     ],
     Buy: [
@@ -43,8 +44,8 @@ const Navbar = () => {
       { title: "Mercedes-Benz Brand", type: "primary" },
       { title: "Mercedes-EQ", type: "primary" },
       { divider: true },
-      { title: "Mercedes-AMG", type: "secondary" },
-      { title: "Mercedes-Maybach", type: "secondary" },
+      { title: "Mercedes-AMG", type: "secondary", path: "/amg" },
+      { title: "Mercedes-Maybach", type: "secondary", path: "/cabriolets" },
       { title: "Sustainability", type: "secondary" },
       { title: "Museum & Heritage", type: "secondary" },
     ]
@@ -79,7 +80,7 @@ const Navbar = () => {
 
         {/* Center: Logo */}
         <div className="flex items-center justify-center">
-          <a href="/" className="group relative">
+          <Link to="/" className="group relative">
             <motion.div
               initial={{ scale: 0.8, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
@@ -91,7 +92,7 @@ const Navbar = () => {
                 className="h-24 w-auto object-contain transition-transform duration-700 group-hover:scale-105" 
               />
             </motion.div>
-          </a>
+          </Link>
         </div>
 
         {/* Right: Utilities & Login */}
@@ -159,10 +160,15 @@ const Navbar = () => {
               <div className="flex flex-col gap-6">
                 {menuData[activeMenu].map((item, idx) => {
                   if (item.divider) return <div key={idx} className="h-[1px] bg-black/5 my-4" />
+                  
+                  const Component = item.path ? Link : 'a'
+                  const props = item.path ? { to: item.path } : { href: "#" }
+
                   return (
-                    <a 
+                    <Component 
                       key={idx}
-                      href="#"
+                      {...props}
+                      onClick={() => setActiveMenu(null)}
                       className={cn(
                         "transition-all duration-300 hover:translate-x-2",
                         item.type === "primary" 
@@ -171,7 +177,7 @@ const Navbar = () => {
                       )}
                     >
                       {item.title}
-                    </a>
+                    </Component>
                   )
                 })}
               </div>
