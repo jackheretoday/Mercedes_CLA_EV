@@ -14,7 +14,8 @@
 }
 
 body {
-  @apply bg-black text-white antialiased overflow-x-hidden;
+  @apply bg-black text-white antialiased;
+  overflow-x: clip;
   font-family: 'Outfit', sans-serif;
 }
 

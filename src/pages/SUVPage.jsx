@@ -32,10 +32,10 @@ const suvModels = [
 
 const SUVPage = () => {
   return (
-    <div className="min-h-screen bg-black text-white pt-32 pb-20 px-10 relative overflow-hidden">
+    <div className="min-h-screen bg-[#fcfcfd] dark:bg-black text-zinc-900 dark:text-white pt-32 pb-20 px-6 lg:px-10 relative overflow-hidden transition-colors duration-500">
       {/* Animated Background Glows */}
       <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-blue-500/10 blur-[120px] rounded-full pointer-events-none animate-pulse" />
-      <div className="absolute bottom-0 right-1/4 w-[600px] h-[600px] bg-white/5 blur-[150px] rounded-full pointer-events-none" />
+      <div className="absolute bottom-0 right-1/4 w-[600px] h-[600px] bg-black/5 dark:bg-white/5 blur-[150px] rounded-full pointer-events-none" />
 
       <header className="max-w-7xl mx-auto mb-20 relative z-10">
         <motion.div
@@ -43,9 +43,9 @@ const SUVPage = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
         >
-          <span className="text-[10px] uppercase tracking-[0.5em] text-white/40 mb-4 block">The Range</span>
-          <h1 className="text-7xl font-bold font-michroma tracking-tighter mb-6">SUV RANGE</h1>
-          <p className="text-white/40 max-w-2xl text-lg leading-relaxed">
+          <span className="text-[10px] uppercase tracking-[0.5em] text-zinc-500 dark:text-white/40 mb-4 block">The Range</span>
+          <h1 className="text-5xl sm:text-7xl font-bold font-michroma tracking-tighter mb-6">SUV RANGE</h1>
+          <p className="text-zinc-600 dark:text-white/40 max-w-2xl text-base sm:text-lg leading-relaxed">
             From the agile GLC to the majestic GLS, explore our lineup of SUVs that redefine luxury, capability, and performance.
           </p>
         </motion.div>
@@ -58,17 +58,17 @@ const SUVPage = () => {
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.8, delay: index * 0.1 }}
-            className="group relative bg-zinc-900/30 rounded-3xl overflow-hidden border border-white/5 hover:border-white/20 transition-all duration-500"
+            className="group relative bg-white dark:bg-zinc-900/40 rounded-3xl overflow-hidden border border-black/10 dark:border-white/5 hover:border-black/20 dark:hover:border-white/20 transition-all duration-500 shadow-sm hover:shadow-xl"
           >
-            <div className="p-10 pb-0">
+            <div className="p-8 sm:p-10 pb-0">
               <div className="flex justify-between items-start mb-2">
                 <div>
                   <h2 className="text-3xl font-bold font-michroma mb-1">{car.name}</h2>
-                  <p className="text-white/40 uppercase tracking-widest text-[10px]">{car.tagline}</p>
+                  <p className="text-zinc-500 dark:text-white/40 uppercase tracking-widest text-[10px]">{car.tagline}</p>
                 </div>
                 <div className="text-right">
-                  <span className="text-[10px] uppercase tracking-widest text-white/30 block mb-1">Starting from</span>
-                  <span className="text-lg font-bold text-white/80">{car.price}</span>
+                  <span className="text-[10px] uppercase tracking-widest text-zinc-400 dark:text-white/30 block mb-1">Starting from</span>
+                  <span className="text-lg font-bold text-zinc-800 dark:text-white/80">{car.price}</span>
                 </div>
               </div>
             </div>
@@ -81,11 +81,11 @@ const SUVPage = () => {
               />
             </div>
 
-            <div className="p-10 pt-4 flex gap-4">
-              <button className="flex-1 py-4 bg-white text-black font-bold text-xs uppercase tracking-widest rounded-sm hover:bg-white/90 transition-colors">
+            <div className="p-8 sm:p-10 pt-4 flex gap-4">
+              <button className="flex-1 py-4 bg-zinc-900 text-white dark:bg-white dark:text-black font-bold text-xs uppercase tracking-widest rounded-sm hover:opacity-90 transition-colors">
                 Explore
               </button>
-              <button className="px-6 py-4 bg-white/5 text-white border border-white/10 font-bold text-xs uppercase tracking-widest rounded-sm hover:bg-white/10 transition-colors">
+              <button className="px-6 py-4 bg-black/5 dark:bg-white/5 text-zinc-800 dark:text-white border border-black/10 dark:border-white/10 font-bold text-xs uppercase tracking-widest rounded-sm hover:bg-black/10 dark:hover:bg-white/10 transition-colors">
                 <ChevronRight size={18} />
               </button>
             </div>

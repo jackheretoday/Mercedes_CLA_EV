@@ -12,16 +12,16 @@ import { cn } from "@/lib/utils"
 
 const frameCount = 300
 const currentFrame = (index) =>
-  `car_scroll_frames/ezgif-frame-${index.toString().padStart(3, "0")}.jpg`
+  `/car_scroll_frames/ezgif-frame-${index.toString().padStart(3, "0")}.jpg`
 
 export default function HomePage() {
-  const [images, setImages] = React.useState([])
+  const imagesRef = React.useRef([])
   const [progress, setProgress] = React.useState(0)
   const [isLoading, setIsLoading] = React.useState(true)
   const [showSlogan, setShowSlogan] = React.useState(false)
   const canvasRef = React.useRef(null)
-  const contextRef = React.useRef(null)
   const containerRef = React.useRef(null)
+  const currentFrameRef = React.useRef(0)
 
   const { scrollYProgress } = useScroll({
     target: containerRef,
@@ -29,88 +29,110 @@ export default function HomePage() {
   })
 
   const smoothProgress = useSpring(scrollYProgress, {
-    stiffness: 100,
-    damping: 30,
-    restDelta: 0.001
+    stiffness: 250,
+    damping: 35,
+    mass: 0.2,
+    restDelta: 0.0005
   })
 
-  const frameIndex = useTransform(smoothProgress, [0, 0.95], [0, frameCount - 1])
-  const opacity1 = useTransform(smoothProgress, [0, 0.1, 0.25], [0, 1, 0])
-  const opacity2 = useTransform(smoothProgress, [0.3, 0.45, 0.6], [0, 1, 0])
-  const canvasOpacity = useTransform(smoothProgress, [0.95, 1], [1, 0])
+  const opacity1 = useTransform(smoothProgress, [0, 0.12, 0.24], [1, 1, 0])
+  const opacity2 = useTransform(smoothProgress, [0.24, 0.36, 0.48, 0.58], [0, 1, 1, 0])
+  const canvasOpacity = useTransform(smoothProgress, [0.92, 0.98], [1, 0])
 
-  useMotionValueEvent(smoothProgress, "change", (v) => {
-    if (v > 0.65 && !showSlogan) {
-      setShowSlogan(true)
-    } else if (v < 0.6 && showSlogan) {
-      setShowSlogan(false)
-    }
-  })
-
-  const render = React.useCallback((index) => {
-    const ctx = contextRef.current
-    if (!ctx || images.length === 0) return
-
-    const img = images[Math.min(Math.floor(index), frameCount - 1)]
-    if (img) {
-      const canvas = canvasRef.current
-      const scale = Math.max(canvas.width / img.width, canvas.height / img.height)
-      const x = (canvas.width / 2) - (img.width / 2) * scale
-      const y = (canvas.height / 2) - (img.height / 2) * scale
-
-      ctx.clearRect(0, 0, canvas.width, canvas.height)
-      ctx.drawImage(img, x, y, img.width * scale, img.height * scale)
-    }
-  }, [images])
-
-  const handleResize = React.useCallback(() => {
-    if (!canvasRef.current) return
+  const renderFrame = React.useCallback((index) => {
     const canvas = canvasRef.current
-    const dpr = window.devicePixelRatio || 1
+    if (!canvas) return
+    const ctx = canvas.getContext("2d")
+    if (!ctx) return
+    const imgs = imagesRef.current
+    if (!imgs || imgs.length === 0) return
 
-    // Set display size
-    canvas.style.width = window.innerWidth + 'px'
-    canvas.style.height = window.innerHeight + 'px'
+    const clampedIndex = Math.max(0, Math.min(Math.round(index), frameCount - 1))
+    currentFrameRef.current = clampedIndex
+    const img = imgs[clampedIndex]
 
-    // Set actual size in memory
+    if (img && img.complete && img.naturalWidth > 0) {
+      ctx.clearRect(0, 0, canvas.width, canvas.height)
+      const scale = Math.max(canvas.width / img.naturalWidth, canvas.height / img.naturalHeight)
+      const x = (canvas.width - img.naturalWidth * scale) / 2
+      const y = (canvas.height - img.naturalHeight * scale) / 2
+      ctx.imageSmoothingEnabled = true
+      ctx.imageSmoothingQuality = "high"
+      ctx.drawImage(img, x, y, img.naturalWidth * scale, img.naturalHeight * scale)
+    }
+  }, [])
+
+  const resizeCanvas = React.useCallback(() => {
+    const canvas = canvasRef.current
+    if (!canvas) return
+    const dpr = Math.min(window.devicePixelRatio || 1, 2)
     canvas.width = window.innerWidth * dpr
     canvas.height = window.innerHeight * dpr
+    canvas.style.width = `${window.innerWidth}px`
+    canvas.style.height = `${window.innerHeight}px`
+    renderFrame(currentFrameRef.current)
+  }, [renderFrame])
 
-    const ctx = canvas.getContext("2d")
-    ctx.imageSmoothingEnabled = true
-    ctx.imageSmoothingQuality = "high"
-    contextRef.current = ctx
-
-    render(frameIndex.get())
-  }, [frameIndex, render])
-
+  // Preload all frames
   React.useEffect(() => {
-    const loadedImages = []
+    const loadedImages = new Array(frameCount)
     let loadedCount = 0
+    let isCancelled = false
 
     for (let i = 1; i <= frameCount; i++) {
       const img = new Image()
-      img.src = currentFrame(i)
-      img.onload = () => {
+
+      const handleLoadOrError = () => {
+        if (isCancelled) return
         loadedCount++
         setProgress(Math.round((loadedCount / frameCount) * 100))
-        if (loadedCount === frameCount) {
-          setTimeout(() => {
-            setIsLoading(false)
-            handleResize()
-          }, 500)
+
+        if (i === 1) {
+          imagesRef.current[0] = img
+          renderFrame(0)
+        }
+
+        if (loadedCount >= frameCount) {
+          imagesRef.current = loadedImages
+          setIsLoading(false)
         }
       }
-      loadedImages.push(img)
+
+      img.onload = handleLoadOrError
+      img.onerror = handleLoadOrError
+      img.src = currentFrame(i)
+      loadedImages[i - 1] = img
     }
-    setImages(loadedImages)
 
-    window.addEventListener("resize", handleResize)
-    return () => window.removeEventListener("resize", handleResize)
-  }, [])
+    return () => {
+      isCancelled = true
+    }
+  }, [renderFrame])
 
-  useMotionValueEvent(frameIndex, "change", (v) => {
-    render(v)
+  // Initialize canvas size and draw first frame once loaded
+  React.useEffect(() => {
+    if (!isLoading) {
+      resizeCanvas()
+      renderFrame(0)
+    }
+  }, [isLoading, resizeCanvas, renderFrame])
+
+  // Window resize handler
+  React.useEffect(() => {
+    window.addEventListener("resize", resizeCanvas)
+    return () => window.removeEventListener("resize", resizeCanvas)
+  }, [resizeCanvas])
+
+  // Handle scroll progress and update frames
+  useMotionValueEvent(smoothProgress, "change", (latest) => {
+    const frame = Math.min(frameCount - 1, Math.max(0, Math.floor((latest / 0.95) * frameCount)))
+    renderFrame(frame)
+
+    if (latest > 0.62 && !showSlogan) {
+      setShowSlogan(true)
+    } else if (latest < 0.58 && showSlogan) {
+      setShowSlogan(false)
+    }
   })
 
   return (
@@ -130,9 +152,9 @@ export default function HomePage() {
         </div>
       )}
 
-      <div className={cn("transition-opacity duration-1000", isLoading ? "opacity-0" : "opacity-100")}>
+      <div className={cn("relative w-full transition-opacity duration-1000", isLoading ? "opacity-0" : "opacity-100")}>
         {/* Main Cinematic Scroll Sequence */}
-        <section ref={containerRef} className="h-[600vh] relative">
+        <section ref={containerRef} className="h-[500vh] relative">
           <div className="sticky top-0 h-screen w-full overflow-hidden z-0 bg-black">
             {/* Background Depth Gradient */}
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.03)_0%,transparent_70%)] z-0" />
@@ -147,11 +169,23 @@ export default function HomePage() {
               {/* Step 1: Intro */}
               <motion.div
                 style={{ opacity: opacity1 }}
-                className="absolute inset-0 flex items-center justify-center text-center"
+                className="absolute inset-0 flex flex-col items-center justify-center text-center pointer-events-none"
               >
                 <div>
                   <h1 className="text-8xl font-black tracking-tighter mb-4 text-glow font-michroma">THE EQE</h1>
                   <p className="text-sm tracking-[0.5em] text-white/50 uppercase">Electric Intelligence. Engineered.</p>
+                </div>
+
+                {/* Subtle Scroll Hint */}
+                <div className="absolute bottom-12 flex flex-col items-center gap-2 text-white/40">
+                  <span className="text-[10px] tracking-[0.4em] uppercase font-michroma">Scroll to Illuminate</span>
+                  <div className="w-5 h-8 border border-white/20 rounded-full flex justify-center p-1">
+                    <motion.div
+                      animate={{ y: [0, 8, 0], opacity: [1, 0.3, 1] }}
+                      transition={{ duration: 1.8, repeat: Infinity, ease: "easeInOut" }}
+                      className="w-1 h-2 bg-white rounded-full"
+                    />
+                  </div>
                 </div>
               </motion.div>
 

@@ -23,10 +23,10 @@ const CabrioletPage = () => {
   ]
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a] text-white relative overflow-hidden">
+    <div className="min-h-screen bg-[#fcfcfd] dark:bg-[#0a0a0a] text-zinc-900 dark:text-white relative overflow-hidden transition-colors duration-500">
       {/* Subtle Background Elements */}
       <div className="absolute top-1/3 -right-20 w-[400px] h-[400px] bg-red-900/10 blur-[100px] rounded-full pointer-events-none" />
-      <div className="absolute bottom-1/4 -left-20 w-[500px] h-[500px] bg-white/5 blur-[120px] rounded-full pointer-events-none" />
+      <div className="absolute bottom-1/4 -left-20 w-[500px] h-[500px] bg-black/5 dark:bg-white/5 blur-[120px] rounded-full pointer-events-none" />
 
       {/* Hero Section */}
       <section className="relative h-screen w-full flex items-center justify-center overflow-hidden">
@@ -36,10 +36,10 @@ const CabrioletPage = () => {
             alt="Mercedes-Maybach SL"
             className="w-full h-full object-cover opacity-80"
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-transparent to-[#0a0a0a]" />
+          <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-transparent to-[#fcfcfd] dark:to-[#0a0a0a]" />
         </div>
 
-        <div className="relative z-10 text-center px-10">
+        <div className="relative z-10 text-center px-10 text-white">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
@@ -47,15 +47,15 @@ const CabrioletPage = () => {
           >
             <span className="text-xs uppercase tracking-[0.8em] text-white/60 mb-6 block font-michroma">Mercedes-Maybach</span>
             <h1 className="text-6xl md:text-9xl font-bold font-michroma tracking-tighter mb-8">SL MONOGRAM</h1>
-            <p className="text-white/40 max-w-3xl mx-auto text-sm md:text-lg tracking-widest uppercase leading-loose">
+            <p className="text-white/60 max-w-3xl mx-auto text-sm md:text-lg tracking-widest uppercase leading-loose">
               Sophistication meets open-top performance. <br /> The pinnacle of the SL range.
             </p>
           </motion.div>
         </div>
 
         <div className="absolute bottom-20 left-1/2 -translate-x-1/2 flex flex-col items-center gap-4">
-          <span className="text-[10px] uppercase tracking-[0.4em] text-white/20">Scroll to Explore</span>
-          <div className="w-[1px] h-20 bg-gradient-to-b from-white/20 to-transparent" />
+          <span className="text-[10px] uppercase tracking-[0.4em] text-zinc-500 dark:text-white/20">Scroll to Explore</span>
+          <div className="w-[1px] h-20 bg-gradient-to-b from-zinc-400 dark:from-white/20 to-transparent" />
         </div>
       </section>
 
@@ -71,7 +71,7 @@ const CabrioletPage = () => {
               transition={{ duration: 0.8, delay: index * 0.2 }}
               className="group"
             >
-              <div className="aspect-square overflow-hidden rounded-2xl mb-8 border border-white/5 bg-zinc-900">
+              <div className="aspect-square overflow-hidden rounded-2xl mb-8 border border-black/10 dark:border-white/5 bg-zinc-100 dark:bg-zinc-900 shadow-sm">
                 <img 
                   src={item.image} 
                   alt={item.title}
@@ -79,7 +79,7 @@ const CabrioletPage = () => {
                 />
               </div>
               <h3 className="text-xl font-bold font-michroma mb-4 tracking-tight">{item.title}</h3>
-              <p className="text-white/40 text-sm leading-relaxed">{item.desc}</p>
+              <p className="text-zinc-600 dark:text-white/40 text-sm leading-relaxed">{item.desc}</p>
             </motion.div>
           ))}
         </div>
@@ -93,16 +93,16 @@ const CabrioletPage = () => {
             alt="Maybach SL"
             className="w-full h-full object-cover opacity-20"
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-[#0a0a0a] via-transparent to-[#0a0a0a]" />
+          <div className="absolute inset-0 bg-gradient-to-b from-[#fcfcfd] dark:from-[#0a0a0a] via-transparent to-[#fcfcfd] dark:to-[#0a0a0a]" />
         </div>
 
         <div className="relative z-10">
           <h2 className="text-4xl md:text-6xl font-bold font-michroma mb-12 tracking-tighter">THE ULTIMATE IN OPEN-AIR LUXURY</h2>
           <div className="flex flex-col md:flex-row justify-center gap-6">
-            <button className="px-12 py-6 bg-white text-black font-bold uppercase tracking-[0.3em] text-xs hover:bg-white/90 transition-all transform hover:scale-105">
+            <button className="px-12 py-6 bg-zinc-900 text-white dark:bg-white dark:text-black font-bold uppercase tracking-[0.3em] text-xs hover:opacity-90 transition-all transform hover:scale-105 shadow-xl">
               Experience Maybach
             </button>
-            <button className="px-12 py-6 bg-transparent border border-white/20 text-white font-bold uppercase tracking-[0.3em] text-xs hover:bg-white/5 transition-all">
+            <button className="px-12 py-6 bg-transparent border border-black/20 dark:border-white/20 text-zinc-900 dark:text-white font-bold uppercase tracking-[0.3em] text-xs hover:bg-black/5 dark:hover:bg-white/5 transition-all">
               Request Info
             </button>
           </div>
